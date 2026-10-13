@@ -6,11 +6,6 @@ from secintel_mcp.server import mcp
 pytestmark = pytest.mark.anyio
 
 
-@pytest.fixture
-def anyio_backend():
-    return "asyncio"
-
-
 async def test_ping_is_listed_as_read_only():
     async with Client(mcp) as client:
         tools = (await client.list_tools()).tools
