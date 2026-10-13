@@ -39,7 +39,9 @@ NVD에서 CVE 한 건의 상세 정보를 가져옵니다.
 | `cvss` | 대표 점수 하나 (`version`, `base_score`, `severity`, `vector`, `source`, `source_type`). `Secondary`는 CNA나 CISA ADP 같은 다른 제공자의 점수입니다. 선택 규칙은 [priority-rules.md](priority-rules.md#cvss-점수-선택) 참고. 아직 점수가 없으면 null |
 | `cwes` | CWE ID 목록 |
 | `references` | 최대 10개. `Exploit`, `Patch`, `Vendor Advisory` 태그가 붙은 링크를 먼저 |
-| `references_total` | 전체 참조 링크 수 (log4shell은 100개가 넘습니다) |
+| `references_total` | 중복 URL을 뺀 전체 참조 링크 수 (log4shell은 52개). `Broken Link` 태그가 붙은 링크는 맨 뒤로 보냅니다 |
+
+NVD에 없는 CVE를 조회하면 에러를 반환합니다. 게시된 지 몇 시간 안 된 CVE는 아직 NVD에 없을 수 있다는 안내가 함께 갑니다.
 
 ## query_package_vulns
 

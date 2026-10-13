@@ -1,5 +1,6 @@
 """Shared HTTP client settings and JSON fetching."""
 
+from collections.abc import Callable
 from typing import Any
 
 import httpx
@@ -26,8 +27,13 @@ async def get_json(
     source: str,
     params: dict[str, str] | None = None,
     headers: dict[str, str] | None = None,
+    explain_error: Callable[[httpx.Response], str | None] | None = None,
 ) -> Any:
-    """GET a JSON document, turning every failure into a SourceError."""
+    """GET a JSON document, turning every failure into a SourceError.
+
+    `explain_error` lets a source turn an error response into a specific message;
+    returning None falls back to the generic one.
+    """
     try:
         response = await client.get(url, params=params, headers=headers)
     except httpx.TimeoutException as exc:
@@ -38,8 +44,10 @@ async def get_json(
         ) from exc
 
     if response.status_code >= 400:
+        message = explain_error(response) if explain_error else None
         raise SourceError(
-            source, f"returned HTTP {response.status_code}. Try again later."
+            source,
+            message or f"returned HTTP {response.status_code}. Try again later.",
         )
     try:
         # JSON is UTF-8 by spec; decoding the bytes avoids the locale codec (cp949 on

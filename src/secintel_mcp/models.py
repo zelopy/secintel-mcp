@@ -101,8 +101,8 @@ class CveDetail(BaseModel):
     )
     cvss: CvssScore | None = Field(
         description=(
-            "Preferred score: the newest CVSS version available; within a version, NVD "
-            "(Primary) first, then the CNA, then other providers. Null when unscored."
+            "Preferred score: CVSS v3.1 if any, else v4.0, v3.0, v2.0; within a version, "
+            "NVD (Primary) first, then the CNA, then other providers. Null when unscored."
         )
     )
     cwes: list[str] = Field(description="CWE IDs, e.g. CWE-502.")

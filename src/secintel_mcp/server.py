@@ -7,9 +7,9 @@ tool, so they say when to use each one.
 from mcp.server.mcpserver import MCPServer
 from mcp.types import ToolAnnotations
 
-from secintel_mcp import __version__
-from secintel_mcp.models import CveIdBatch, EpssResult, KevResult
-from secintel_mcp.sources import epss, kev
+from secintel_mcp import __version__, config
+from secintel_mcp.models import CveDetail, CveId, CveIdBatch, EpssResult, KevResult
+from secintel_mcp.sources import epss, kev, nvd
 from secintel_mcp.sources.http import make_client
 
 mcp = MCPServer(
@@ -30,6 +30,22 @@ READ_ONLY_EXTERNAL = ToolAnnotations(readOnlyHint=True, openWorldHint=True)
 def ping() -> str:
     """Check that the server is running. Calls no external API."""
     return f"pong (secintel-mcp {__version__})"
+
+
+@mcp.tool(annotations=READ_ONLY_EXTERNAL)
+async def lookup_cve(cve_id: CveId) -> CveDetail:
+    """Get NVD details for one CVE: description, CVSS score, CWEs, and references.
+
+    Use this to explain what a vulnerability is. Recent CVEs are often scored only
+    by the CNA (cvss.source_type is Secondary) because NVD analysis lags. A CVE
+    with nvd_status Rejected is void, usually a duplicate; its description says
+    which ID to use instead. For several CVEs, prefer prioritize_cves.
+
+    Args:
+        cve_id: A CVE ID such as CVE-2021-44228.
+    """
+    async with make_client() as client:
+        return await nvd.fetch_cve(client, cve_id, config.nvd_api_key())
 
 
 @mcp.tool(annotations=READ_ONLY_EXTERNAL)
