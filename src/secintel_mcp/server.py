@@ -8,8 +8,8 @@ from mcp.server.mcpserver import MCPServer
 from mcp.types import ToolAnnotations
 
 from secintel_mcp import __version__
-from secintel_mcp.models import CveIdBatch, KevResult
-from secintel_mcp.sources import kev
+from secintel_mcp.models import CveIdBatch, EpssResult, KevResult
+from secintel_mcp.sources import epss, kev
 from secintel_mcp.sources.http import make_client
 
 mcp = MCPServer(
@@ -46,6 +46,21 @@ async def check_kev(cve_ids: CveIdBatch) -> KevResult:
     async with make_client() as client:
         catalog = await kev.fetch_catalog(client)
     return kev.lookup(catalog, cve_ids)
+
+
+@mcp.tool(annotations=READ_ONLY_EXTERNAL)
+async def get_epss(cve_ids: CveIdBatch) -> EpssResult:
+    """Get FIRST EPSS scores: the probability that each CVE is exploited in the next 30 days.
+
+    Use this when the question is "how likely is this to be exploited?". EPSS is a
+    forecast; for confirmed exploitation use check_kev. To rank CVEs for patching,
+    use prioritize_cves, which combines EPSS with KEV and CVSS.
+
+    Args:
+        cve_ids: 1-100 CVE IDs such as CVE-2021-44228.
+    """
+    async with make_client() as client:
+        return await epss.fetch_scores(client, cve_ids)
 
 
 def main() -> None:
