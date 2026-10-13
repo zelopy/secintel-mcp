@@ -34,9 +34,11 @@ CVE 정보 조회, 패키지 버전별 취약점 확인, 실제 악용 여부와
 | P2 | EPSS ≥ 0.1 또는 EPSS percentile ≥ 0.95 |
 | P3 | CVSS ≥ 7.0 |
 | P4 | 그 외 |
+| UNKNOWN | 판정에 필요한 데이터가 없음 (NVD에 없거나 철회된 CVE, 점수 미공개 등) |
 
-- 임계값은 설정이나 도구 인자로 변경할 수 있습니다.
+- 임계값은 도구 인자로 변경할 수 있습니다.
 - KEV와 EPSS만으로 등급이 정해진 CVE는 NVD를 조회하지 않습니다. 따라서 NVD 요청 한도에 걸리지 않고 더 빨리 응답합니다.
+- 자세한 규칙은 [docs/priority-rules.md](docs/priority-rules.md)에 있습니다.
 
 패키지 단위로 우선순위를 매기려면 에이전트가 `query_package_vulns`로 CVE 목록을 얻은 뒤 `prioritize_cves`에 넘기면 됩니다.
 
