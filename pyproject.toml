@@ -18,6 +18,10 @@ dependencies = [
     "mcp>=2.3.0",
 ]
 
+[project.urls]
+Repository = "https://github.com/zelopy/secintel-mcp"
+Issues = "https://github.com/zelopy/secintel-mcp/issues"
+
 [project.scripts]
 secintel-mcp = "secintel_mcp.server:main"
 
